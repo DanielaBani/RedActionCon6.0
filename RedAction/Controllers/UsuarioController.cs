@@ -89,7 +89,7 @@ namespace RedAction.Controllers
                 }
                 _context.Add(usuario);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home"); // Retorna al Home, No al Index de usuarios por no no posee permisos
             }
             return View(usuario);
         }
