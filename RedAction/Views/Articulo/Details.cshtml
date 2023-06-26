@@ -43,8 +43,12 @@
     </dl>
 </div>
 <div>
+    @if ((User.IsInRole("REDACTOR")) && (Model.estado == EstadoArticulo.BORRADOR || Model.estado == EstadoArticulo.EN_REVISION) ||  (User.IsInRole("JDR")) && (Model.estado == EstadoArticulo.ESPERANDO_APROBACION))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+    }
 
-    <a asp-action="Edit" asp-route-id="@Model.Id">Editar</a>
+    
     @if (User.IsInRole("JDR"))
     {
         <a asp-action="Index">Volver a la lista de Artículos</a>
