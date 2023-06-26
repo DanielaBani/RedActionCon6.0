@@ -1,0 +1,51 @@
+﻿@model RedAction.Models.Articulo
+
+@{
+    ViewData["Title"] = "Eliminar Artículo";
+}
+
+<h1>Eliminar Artículo</h1>
+
+<h3>¿Está seguro que desea eliminar el artículo?</h3>
+<div>
+    <h4>Articulo</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.autor)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.autor.Dni)
+        </dd class>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.contenido)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.contenido)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.seccion)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.seccion)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.estado)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.estado)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.observaciones)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.observaciones)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Eliminar Artículo" class="btn btn-danger" /> |
+        <a asp-action="Index">Volver al listado de Artículos</a>
+    </form>
+</div>

@@ -1,0 +1,66 @@
+﻿@model IEnumerable<RedAction.Models.Articulo>
+
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<h1>Inicio</h1>
+
+<p>
+    <a asp-action="Create">Crear Artículo nuevo</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.autor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.contenido)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.seccion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.estado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.observaciones)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.autor.nombreCompleto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.contenido)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.seccion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.estado)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.observaciones)
+                </td>
+                <td>
+                    @if (item.estado != EstadoArticulo.PUBLICADO)
+
+                    {
+
+                        <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                    }
+                    <a asp-action="Details" asp-route-id="@item.Id">Ver Detalle</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

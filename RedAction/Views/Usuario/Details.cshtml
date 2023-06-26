@@ -1,0 +1,48 @@
+﻿@model RedAction.Models.Usuario
+
+@{
+    ViewData["Title"] = "Detalle de Usuario";
+}
+
+<h1>Detalle</h1>
+
+<div>
+    <h4>Usuario</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FotoPerfil)
+        </dt>
+        <dd class="col-sm-10">
+            <img src="@Html.DisplayFor(model => model.FotoPerfil)" height="75" alt="Foto de Perfil" />
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Dni)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Dni)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.nombreCompleto)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.nombreCompleto)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.mail)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.mail)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.tipo)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.tipo)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Editar</a> |
+    <a asp-action="Index">Volver a la lista de Usuarios</a>
+</div>

@@ -1,0 +1,61 @@
+﻿@model IEnumerable<RedAction.Models.Usuario>
+
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<h1>Inicio</h1>
+
+<p>
+    <a id="register" asp-area="Identity" asp-page="/Account/Register">Registrar nuevo Usuario</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FotoPerfil)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dni)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.nombreCompleto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.mail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.tipo)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <img src="@item.FotoPerfil" height="75" alt="Foto de Perfil">
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dni)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.nombreCompleto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.mail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.tipo)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Ver Detalle</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
