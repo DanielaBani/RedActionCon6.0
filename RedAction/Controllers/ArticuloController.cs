@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,10 +13,12 @@ namespace RedAction.Controllers
     public class ArticuloController : Controller
     {
         private readonly RedActionDBContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public ArticuloController(RedActionDBContext context)
+        public ArticuloController(RedActionDBContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Articulo
@@ -63,6 +66,24 @@ namespace RedAction.Controllers
         {
             if (ModelState.IsValid)
             {
+                //Acá selecciono el usuario que está registrado
+                var user = await _userManager.GetUserAsync(User);
+
+                //Acá valido que el user no sea null y que el Usuario tampoco
+                if (user == null || _context.Usuario == null)
+                {
+                    return RedirectToAction("MensajeError", "Home");
+                }
+
+                //Busco al Usuario a partir del mail
+                var usuario = await _context.Usuario.Where(u => u.mail.ToUpper() == user.NormalizedEmail).FirstOrDefaultAsync();
+
+                if (usuario == null)
+                {
+                    return RedirectToAction("MensajeError", "Home");
+                }
+
+                articulo.AutorId = usuario.Id;
                 articulo.estado = EstadoArticulo.BORRADOR;
                 _context.Add(articulo);
                 await _context.SaveChangesAsync();

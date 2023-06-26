@@ -32,6 +32,6 @@ namespace RedAction.Models
         [EnumDataType(typeof(EstadoArticulo))]
         public EstadoArticulo? estado { get; set; }
         [Display(Name = "Observaciones")]
-        public string observaciones { get; set; }
+        public string? observaciones { get; set; }
     }
 }
