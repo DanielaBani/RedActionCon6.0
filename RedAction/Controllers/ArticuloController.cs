@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,12 +24,12 @@ namespace RedAction.Controllers
         }
 
         // GET: Articulo
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var redActionDBContext = await _context.Articulo.Include(a => a.autor).ToListAsync(); // HAGO UNA LISTA POR AUTOR
-            var listaArticulos = redActionDBContext.Where(a => a.estado != EstadoArticulo.ESPERANDO_APROBACION).ToList(); // FILTRO SACANDO SACANDO ESPERANDO APROBACION
-                                                                                                                        // ver que pasa si el autor es el Administrador
-                                                                                                                        //ver el index que se modifico los botones                                                                                                                   // ver que pasa si el autor es el Administrador
+            var listaArticulos = redActionDBContext.Where(a => a.estado == EstadoArticulo.ESPERANDO_APROBACION || a.estado == EstadoArticulo.PUBLICADO).ToList();
+                                                                                                                                                                                                                    
             return View(listaArticulos);
         }
 
@@ -64,33 +66,40 @@ namespace RedAction.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,AutorId,contenido,seccion,observaciones")] Articulo articulo)
         {
+            //Acá selecciono el usuario que está registrado
+            var user = await _userManager.GetUserAsync(User);
+
+            //Acá valido que el user no sea null y que el Usuario tampoco
+            if (user == null || _context.Usuario == null)
+            {
+                return RedirectToAction("MensajeError", "Home");
+            }
+
+            //Busco al Usuario a partir del mail
+            var usuario = await _context.Usuario.Where(u => u.mail.ToUpper() == user.NormalizedEmail).FirstOrDefaultAsync();
+
+            if (usuario == null)
+            {
+                return RedirectToAction("MensajeError", "Home");
+            }
+
+            var redActionDBContext = await _context.Articulo.Include(a => a.autor).ToListAsync(); // HAGO UNA LISTA POR AUTOR
+            //Filtro por los artículos de autoría de este usuario pero que NO estén en ESPERANDO_APROBACION
+            var listaArticulos = redActionDBContext.Where(a => a.AutorId == usuario.Id && a.estado != EstadoArticulo.ESPERANDO_APROBACION).ToList();
+                
+
             if (ModelState.IsValid)
             {
-                //Acá selecciono el usuario que está registrado
-                var user = await _userManager.GetUserAsync(User);
-
-                //Acá valido que el user no sea null y que el Usuario tampoco
-                if (user == null || _context.Usuario == null)
-                {
-                    return RedirectToAction("MensajeError", "Home");
-                }
-
-                //Busco al Usuario a partir del mail
-                var usuario = await _context.Usuario.Where(u => u.mail.ToUpper() == user.NormalizedEmail).FirstOrDefaultAsync();
-
-                if (usuario == null)
-                {
-                    return RedirectToAction("MensajeError", "Home");
-                }
-
                 articulo.AutorId = usuario.Id;
                 articulo.estado = EstadoArticulo.BORRADOR;
                 _context.Add(articulo);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                return RedirectToAction("ArticulosPropios", listaArticulos);
             }
             ViewData["AutorId"] = new SelectList(_context.Usuario, "Id", "Dni", articulo.AutorId);
-            return View(articulo);
+
+            return View(listaArticulos);
         }
 
         // GET: Articulo/Edit/5
@@ -182,6 +191,35 @@ namespace RedAction.Controllers
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "REDACTOR")]
+        [HttpGet("Articulo/MisArticulos")]
+        public async Task<IActionResult> ArticulosPropios()
+        {
+            //Acá selecciono el usuario que está registrado
+            var user = await _userManager.GetUserAsync(User);
+
+            //Acá valido que el user no sea null y que el Usuario tampoco
+            if (user == null || _context.Usuario == null)
+            {
+                return RedirectToAction("MensajeError", "Home");
+            }
+
+            //Busco al Usuario a partir del mail
+            var usuario = await _context.Usuario.Where(u => u.mail.ToUpper() == user.NormalizedEmail).FirstOrDefaultAsync();
+
+            if (usuario == null)
+            {
+                return RedirectToAction("MensajeError", "Home");
+            }
+
+            var redActionDBContext = await _context.Articulo.Include(a => a.autor).ToListAsync(); // HAGO UNA LISTA POR AUTOR
+            //Filtro por los artículos de autoría de este usuario pero que NO estén en ESPERANDO_APROBACION
+            var listaArticulos = redActionDBContext.Where(a => a.AutorId == usuario.Id && a.estado != EstadoArticulo.ESPERANDO_APROBACION).ToList();
+
+            return View("Index",listaArticulos);
+
         }
 
         private bool ArticuloExists(int id)

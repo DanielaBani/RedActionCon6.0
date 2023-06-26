@@ -21,9 +21,20 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Articulo" asp-action="Index">Mis Artículos</a>
-                        </li>
+                        @if (User.IsInRole("JDR"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Articulo" asp-action="Index">Gestor de Articulos</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("REDACTOR"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Articulo" asp-action="ArticulosPropios">Mis Artículos</a>
+                            </li>
+                        }
+
                         @if (User.IsInRole("JDR"))
                         {
                             <li class="nav-item">
