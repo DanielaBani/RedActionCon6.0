@@ -24,9 +24,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Articulo" asp-action="Index">Mis Artículos</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Usuario" asp-action="Index">Gestor de Usuarios</a>
-                        </li>
+                        @if (User.IsInRole("JDR"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Usuario" asp-action="Index">Gestor de Usuarios</a>
+                            </li>
+                        }
+                                            
+                        
                     </ul>
                 </div>
                 <partial name="_LoginPartial" />
