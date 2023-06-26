@@ -14,6 +14,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <select asp-for="AutorId" class="form-control" asp-items="ViewBag.AutorId" hidden></select>
+                <select asp-for="estado" class="form-control" hidden><option selected="selected" value="BORRADOR">BORRADOR</option></select>
 
             <div class="form-group">
                 <label asp-for="contenido" class="control-label"></label>

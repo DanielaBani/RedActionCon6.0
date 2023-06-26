@@ -86,7 +86,6 @@ namespace RedAction.Controllers
             var redActionDBContext = await _context.Articulo.Include(a => a.autor).ToListAsync(); // HAGO UNA LISTA POR AUTOR
             //Filtro por los artículos de autoría de este usuario pero que NO estén en ESPERANDO_APROBACION
             var listaArticulos = redActionDBContext.Where(a => a.AutorId == usuario.Id && a.estado != EstadoArticulo.ESPERANDO_APROBACION).ToList();
-                
 
             if (ModelState.IsValid)
             {
@@ -131,6 +130,27 @@ namespace RedAction.Controllers
                 return NotFound();
             }
 
+            //Acá selecciono el usuario que está registrado
+            var user = await _userManager.GetUserAsync(User);
+
+            //Acá valido que el user no sea null y que el Usuario tampoco
+            if (user == null || _context.Usuario == null)
+            {
+                return RedirectToAction("MensajeError", "Home");
+            }
+
+            //Busco al Usuario a partir del mail
+            var usuario = await _context.Usuario.Where(u => u.mail.ToUpper() == user.NormalizedEmail).FirstOrDefaultAsync();
+
+            if (usuario == null)
+            {
+                return RedirectToAction("MensajeError", "Home");
+            }
+
+            var redActionDBContext = await _context.Articulo.Include(a => a.autor).ToListAsync(); // HAGO UNA LISTA POR AUTOR
+            //Filtro por los artículos de autoría de este usuario pero que NO estén en ESPERANDO_APROBACION
+            var listaArticulos = redActionDBContext.Where(a => a.AutorId == usuario.Id && a.estado != EstadoArticulo.ESPERANDO_APROBACION).ToList();
+
             if (ModelState.IsValid)
             {
                 try
@@ -149,10 +169,25 @@ namespace RedAction.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                if (usuario.tipo == TipoUsuario.REDACTOR)
+                {
+                    return RedirectToAction("ArticulosPropios", listaArticulos);
+                }
+                else
+                {
+                    return RedirectToAction(nameof(Index));
+                }
             }
             ViewData["AutorId"] = new SelectList(_context.Usuario, "Id", "Dni", articulo.AutorId);
-            return View(articulo);
+            if (usuario.tipo == TipoUsuario.REDACTOR)
+            {
+                return View(listaArticulos);
+            }
+            else
+            {
+                return View(articulo);
+            }
         }
 
         // GET: Articulo/Delete/5
