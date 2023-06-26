@@ -28,20 +28,30 @@
                 <select asp-for="seccion" class="form-control" asp-items="Html.GetEnumSelectList<Seccion>()"><option selected="selected" value="">Seleccionar</option></select>
                 <span asp-validation-for="seccion" class="text-danger"></span>
                 </div>
+
+                <div class="form-group">
+                    <label asp-for="estado" class="control-label"></label>
+                    <select asp-for="estado" class="form-control">
+                        <option enable value="">Seleccionar</option>
+                        <option value="ESPERANDO_APROBACION">Esperando Aprobación</option>
+                    </select>
+                    <span asp-validation-for="estado" class="text-danger"></span>
+                </div>
             }
             else
             {
                 <input asp-for="contenido" class="form-control" hidden/>
                 <select asp-for="seccion" class="form-control" asp-items="Html.GetEnumSelectList<Seccion>()" hidden><option selected="selected" value="">Seleccionar</option></select>
-            }
-
-            <div class="form-group">
-                <label asp-for="estado" class="control-label"></label>
-                <select asp-for="estado" class="form-control" asp-items="Html.GetEnumSelectList<EstadoArticulo>()"  >
+                <div class="form-group">
+                    <label asp-for="estado" class="control-label"></label>
+                    <select asp-for="estado" class="form-control">
+                        <option enable value="">Seleccionar</option>
+                        <option value="EN_REVISION">En Revisión</option>
+                        <option value="PUBLICADO">Publicado</option>
                     </select>
-                <span asp-validation-for="estado" class="text-danger"></span>
-            </div>
-            
+                    <span asp-validation-for="estado" class="text-danger"></span>
+                </div>
+            }            
            
             <div class="form-group">
                 <label asp-for="observaciones" class="control-label"></label>
