@@ -35,30 +35,14 @@
                 <select asp-for="seccion" class="form-control" asp-items="Html.GetEnumSelectList<Seccion>()" hidden><option selected="selected" value="">Seleccionar</option></select>
             }
 
-            @if (User.IsInRole("REDACTOR"))
-            {
-                <div class="form-group">
-                    <label asp-for="estado" class="control-label"></label>
-                    <select asp-for="estado" class="form-control" required >
-                        <option selected="selected" value="" >Seleccionar</option>
-                        <option value= "BORRADOR">Borrador</option>
-                        <option value= "ESPERANDO_APROBACION">Esperando Aprobacion</option>
+            <div class="form-group">
+                <label asp-for="estado" class="control-label"></label>
+                <select asp-for="estado" class="form-control" asp-items="Html.GetEnumSelectList<EstadoArticulo>()"  >
                     </select>
-                    <span asp-validation-for="estado" class="text-danger"></span>
-                </div>
-            }
-            @if (User.IsInRole("JDR"))
-            {
-                <div class="form-group">
-                    <label asp-for="estado" class="control-label"></label>
-                    <select asp-for="estado" class="form-control" asp-items="Html.GetEnumSelectList<EstadoArticulo>()" required>
-                        <option selected="selected" value="">Seleccionar</option>
-                        <option value= "EN_REVISION">En Revision</option>
-                        <option value= "PUBLICADO">Publicado</option>
-                    </select>
-                    <span asp-validation-for="estado" class="text-danger"></span>
-                </div>
-            }
+                <span asp-validation-for="estado" class="text-danger"></span>
+            </div>
+            
+           
             <div class="form-group">
                 <label asp-for="observaciones" class="control-label"></label>
                 <input asp-for="observaciones" class="form-control" />
