@@ -45,7 +45,14 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Eliminar Artículo" class="btn btn-danger" /> |
-        <a asp-action="Index">Volver al listado de Artículos</a>
+        @if (User.IsInRole("REDACTOR"))
+        {
+            <input type="submit" value="Eliminar Artículo" class="btn btn-danger" />
+            <a asp-area="" asp-controller="Articulo" asp-action="ArticulosPropios">Volver a Mis Artículos</a>
+        }else
+        {
+            <a asp-action="Index">Volver al listado de Artículos</a>
+        }
+        
     </form>
 </div>

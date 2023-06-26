@@ -13,14 +13,17 @@
         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
             <button id="logout" type="submit" class="nav-link btn btn-link text-dark">Cerrar Sesión</button>
         </form>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Registrar Usuario</a>
-    </li>
-    <li class="nav-item">
+        </li>
+    }
+    else
+    {
+        @if (User.IsInRole("JDR"))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Registrar Usuario</a>
+            </li>
+        }
+        <li class="nav-item">
         <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Ingresar</a>
     </li>
 }
