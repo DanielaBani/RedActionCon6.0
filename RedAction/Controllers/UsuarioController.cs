@@ -79,7 +79,6 @@ namespace RedAction.Controllers
             if (ModelState.IsValid)
             {
                 
-                //TO-DO Falta modificar métodos de creación de usuario
                 if (await UsuarioDuplicado(usuario.Dni))
                 {
                     return RedirectToAction("MensajeError", "Home");
@@ -141,9 +140,10 @@ namespace RedAction.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                
+                return RedirectToAction("Details", usuario);
             }
-            return View(usuario);
+            return View("Details", usuario);
         }
 
         // GET: Usuario/Delete/5
@@ -182,6 +182,34 @@ namespace RedAction.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize]
+        [HttpGet("Usuario/Perfil")]
+        public async Task<IActionResult> PersonalDetail()
+        {
+            //Acá selecciono el usuario que está registrado
+            var user = await _userManager.GetUserAsync(User);
+
+            //Acá valido que el user no sea null y que el Usuario tampoco
+            if (user == null || _context.Usuario == null)
+            {
+                return RedirectToAction("MensajeError", "Home");
+            }
+
+            //Busco al Usuario a partir del mail
+            var usuario = await _context.Usuario.Where(u => u.mail.ToUpper() == user.NormalizedEmail).FirstOrDefaultAsync();
+
+            if (usuario == null)
+            {
+                return RedirectToAction("MensajeError", "Home");
+            }
+
+            //Reutilizo la vista "Details" de Usuario
+            return View("Details", usuario);
+
+        }
+
+
 
         private bool UsuarioExists(string id)
         {

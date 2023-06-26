@@ -44,5 +44,12 @@
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Editar</a> |
-    <a asp-action="Index">Volver a la lista de Usuarios</a>
+    @if (User.IsInRole("JDR"))
+    {
+        <a asp-action="Index">Volver a la lista de Usuarios</a>
+    }
+    else
+    {
+        <a asp-area="" asp-controller="Home" asp-action="Index">Volver al inicio</a>
+    }
 </div>
