@@ -102,30 +102,8 @@ namespace RedAction.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            //Si el rol de JDR no existe, lo crea    
-            if (!_roleManager.RoleExistsAsync("JDR").GetAwaiter().GetResult())
-            {
-                _roleManager.CreateAsync(new IdentityRole("JDR")).GetAwaiter().GetResult();
-            }
-
-            if (!_roleManager.RoleExistsAsync("REDACTOR").GetAwaiter().GetResult())
-            {
-                _roleManager.CreateAsync(new IdentityRole("REDACTOR")).GetAwaiter().GetResult();
-            }
-            
-            //Cuando el programa corra por primera vez, va a crear al Jefe De Redacción como usuario.
-            IdentityUser user = CreateUser();
-
-            string email, usuario;
-            email = usuario = "jose.perez@redaction.com.ar";
-            await _userStore.SetUserNameAsync(user, email, CancellationToken.None);
-            await _emailStore.SetEmailAsync(user, usuario, CancellationToken.None);
-            var result = await _userManager.CreateAsync(user, "Password1!");
-
-            if (result.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, "JDR");
-            }
+            ReturnUrl = returnUrl;
+            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
         }
 

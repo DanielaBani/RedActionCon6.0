@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace RedAction.Areas.Identity.Pages.Account
 {
@@ -21,11 +22,19 @@ namespace RedAction.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUserStore<IdentityUser> _userStore;
+        private readonly IUserEmailStore<IdentityUser> _emailStore;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(UserManager<IdentityUser> userManager,SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, RoleManager<IdentityRole> roleManager, IUserStore<IdentityUser> userStore)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _roleManager = roleManager;
+            _userManager = userManager;
+            _userStore = userStore;
+            _emailStore = GetEmailStore();
         }
 
         /// <summary>
@@ -93,8 +102,35 @@ namespace RedAction.Areas.Identity.Pages.Account
 
             returnUrl ??= Url.Content("~/");
 
+            //Si el rol de JDR no existe, lo crea    
+            if (!_roleManager.RoleExistsAsync("JDR").GetAwaiter().GetResult())
+            {
+                _roleManager.CreateAsync(new IdentityRole("JDR")).GetAwaiter().GetResult();
+            }
+
+            if (!_roleManager.RoleExistsAsync("REDACTOR").GetAwaiter().GetResult())
+            {
+                _roleManager.CreateAsync(new IdentityRole("REDACTOR")).GetAwaiter().GetResult();
+            }
+
+            //Cuando el programa corra por primera vez, va a crear al Jefe De Redacción como usuario.
+            IdentityUser user = CreateUser();
+
+            string email, usuario;
+            email = usuario = "jose.perez@redaction.com.ar";
+            await _userStore.SetUserNameAsync(user, usuario, CancellationToken.None);
+            await _emailStore.SetEmailAsync(user, email, CancellationToken.None);
+            var result = await _userManager.CreateAsync(user, "Password1!");
+
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "JDR");
+            }
+
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
@@ -133,8 +169,31 @@ namespace RedAction.Areas.Identity.Pages.Account
                 }
             }
 
+
             // If we got this far, something failed, redisplay form
             return Page();
         }
+        private IdentityUser CreateUser()
+        {
+            try
+            {
+                return Activator.CreateInstance<IdentityUser>();
+            }
+            catch
+            {
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
+                    $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+            }
+        }
+        private IUserEmailStore<IdentityUser> GetEmailStore()
+        {
+            if (!_userManager.SupportsUserEmail)
+            {
+                throw new NotSupportedException("The default UI requires a user store with email support.");
+            }
+            return (IUserEmailStore<IdentityUser>)_userStore;
+        }
+
     }
 }
